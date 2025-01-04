@@ -7,7 +7,6 @@
     width: 100%;
 }
 
-/* Grid Layout for Bingo */
 .bingo-game-container #bingo-board {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -58,20 +57,4 @@
 /* Score Display */
 .bingo-game-container #score-display {
     margin-top: 10px;
-}
-
-/* Prevent other page content styles from affecting Bingo */
-body, html {
-    margin: 0;
-    padding: 0;
-}
-
-ul, ol {
-    margin: 0;
-    padding: 0;
-}
-
-/* Bingo game content should not affect global text alignment */
-.bingo-game-container ul, .bingo-game-container ol {
-    text-align: initial !important;
 }
