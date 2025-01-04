@@ -1,16 +1,153 @@
-// Change the div ID to have a custom class
-?>
-<div class="bingo-game-container">
+<?php
+/**
+ * Plugin Name: Bingo Game
+ * Plugin URI: https://example.com
+ * Description: A fun Bingo game to play on your WordPress site. Great for listening exercises.
+ * Version: 1.0
+ * Author: Your Name
+ * Author URI: https://yourwebsite.com
+ * License: GPL2
+ */
+
+// Ensure no direct access to the file
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
+// Register and enqueue the plugin's styles and scripts
+function bingo_game_enqueue_scripts() {
+    wp_enqueue_style( 'bingo-game-style', plugin_dir_url( __FILE__ ) . 'style.css' );
+    wp_enqueue_script( 'bingo-game-script', plugin_dir_url( __FILE__ ) . 'script.js', array(), false, true );
+}
+add_action( 'wp_enqueue_scripts', 'bingo_game_enqueue_scripts' );
+
+// Create the Bingo Game Shortcode
+function bingo_game_shortcode( $atts ) {
+    // Default words and order
+    $default_words = [
+        "Parkplätze", "Zugfahrkarten", "Entwicklung", "Schmetterling",
+        "Verantwortung", "Bewegung", "Geschwindigkeit", "Information",
+        "Apfel", "Banane", "Orange", "Traube",
+        "Erdbeere", "Kiwi", "Kokosnuss", "Wassermelone"
+    ];
+
+    // Sanitize and validate shortcode attributes
+    $atts = shortcode_atts( array(
+        'words' => implode( ',', $default_words ),
+        'correct_order' => 'Entwicklung,Parkplätze,Banane,Zugfahrkarten,Schmetterling,Wassermelone,Bewegung,Erdbeere,Information,Geschwindigkeit,Traube,Kokosnuss,Kiwi,Apfel,Orange',
+    ), $atts, 'bingo_game' );
+
+    // Validate and sanitize the words and correct_order attributes
+    $words = array_map( 'sanitize_text_field', explode( ',', $atts['words'] ) );
+    $correct_order = array_map( 'sanitize_text_field', explode( ',', $atts['correct_order'] ) );
+
+    // Path to the bingo-sound.mp3 in the plugin directory
+    $sound_url = plugin_dir_url( __FILE__ ) . 'bingo-sound.mp3';
+
+    ob_start();
+    ?>
     <h1>Bingo Spiel</h1>
     <p>Höre gut zu und klicke die Wörter in der Reihenfolge, in der der Lehrer sie liest!</p>
     <div id="bingo-board"></div>
-    <audio id="bingo-sound" src="<?php echo DOKU_URL . 'lib/plugins/bingo_game/bingo-sound.mp3'; ?>" preload="auto"></audio>
-    <audio id="row-column-sound" src="<?php echo DOKU_URL . 'lib/plugins/bingo_game/bingo-sound.mp3'; ?>" preload="auto"></audio>
+    <audio id="bingo-sound" src="https://www.soundjay.com/button/sounds/button-3.mp3" preload="auto"></audio>
+    <audio id="row-column-sound" src="<?php echo esc_url($sound_url); ?>" preload="auto"></audio>
 
+    <!-- Manual finish button -->
     <button id="finish-button">Spiel Beenden</button>
     <p id="score-display"></p>
 
     <script>
-        // JavaScript here...
+        // Define words and correct order dynamically from the shortcode
+        const words = <?php echo json_encode($words); ?>;
+        const correctSequence = <?php echo json_encode($correct_order); ?>;
+        const rowColumnSound = document.getElementById('row-column-sound');
+        
+        const bingoBoard = document.getElementById('bingo-board');
+        const bingoSound = document.getElementById('bingo-sound');
+        const finishButton = document.getElementById('finish-button');
+        const scoreDisplay = document.getElementById('score-display');
+
+        let board = [];
+        let nextWordIndex = 0;  // Keeps track of the current word in the correct sequence
+        let score = 0; // Track player score
+        const completedRows = new Set();
+        const rows = [
+            [0, 1, 2, 3],
+            [4, 5, 6, 7],
+            [8, 9, 10, 11],
+            [12, 13, 14, 15]
+        ];
+
+        // Generate Bingo board
+        function generateBoard() {
+            for (let i = 0; i < 16; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'bingo-cell';
+                cell.textContent = words[i];
+                cell.addEventListener('click', () => handleClick(cell, words[i]));
+                bingoBoard.appendChild(cell);
+                board.push(cell);
+            }
+        }
+
+        // Handle cell click
+        function handleClick(cell, word) {
+            // Check if the clicked word matches the next word in the correct sequence
+            if (word === correctSequence[nextWordIndex]) {
+                cell.classList.add('clicked');
+                score++; // Add a point for correct click
+                bingoSound.play();
+                nextWordIndex++; // Move to the next word in the sequence
+                if (nextWordIndex === correctSequence.length) {
+                    alert(`Alle Wörter sind angeklickt! Dein Punktestand ist: ${score}`);
+                    resetGame();
+                }
+            } else {
+                alert("Falsches Wort! Klicke das nächste richtige Wort.");
+                score--; // Subtract a point for incorrect click
+            }
+        }
+
+        // Check if any row or column is complete
+        function checkComplete() {
+            // Check rows
+            rows.forEach((row, rowIndex) => {
+                if (row.every(index => board[index].classList.contains('clicked'))) {
+                    if (!completedRows.has('row_' + rowIndex)) {
+                        completedRows.add('row_' + rowIndex);
+                        rowColumnSound.play(); // Play the row completion sound
+                        alert(`Reihe ${rowIndex + 1} ist fertig!`);
+                    }
+                }
+            });
+        }
+
+        // Reset the game
+        function resetGame() {
+            board.forEach(cell => {
+                cell.classList.remove('clicked');
+            });
+            nextWordIndex = 0;
+            score = 0; // Reset score
+            completedRows.clear();
+        }
+
+        // Display the score manually when the button is clicked
+        function finishGame() {
+            alert(`Das Spiel wurde beendet. Dein Punktestand ist: ${score}`);
+            scoreDisplay.textContent = `Punktestand: ${score}`;
+            resetGame();
+        }
+
+        // Event listener for the manual finish button
+        finishButton.addEventListener('click', finishGame);
+
+        // Initialize the game
+        generateBoard();
+        setInterval(checkComplete, 500); // Check if a row or column is completed every 500ms
     </script>
-</div>
+
+    <?php
+    return ob_get_clean();
+}
+add_shortcode( 'bingo_game', 'bingo_game_shortcode' );
