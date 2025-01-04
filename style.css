@@ -1,4 +1,4 @@
-/* Wrap the whole Bingo game in a .bingo-game-container */
+/* Bingo Game Styles */
 .bingo-game-container {
     font-family: Arial, sans-serif;
     text-align: center; /* Only affects the Bingo game container */
@@ -34,4 +34,15 @@
 
 .bingo-game-container button:hover {
     background-color: #6a9a22;
+}
+
+/* Reset text alignment and list styles globally */
+body, ul, ol {
+    text-align: left !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.bingo-game-container ul, .bingo-game-container ol {
+    text-align: initial !important;  /* Ensures Bingo game lists don't get affected */
 }
