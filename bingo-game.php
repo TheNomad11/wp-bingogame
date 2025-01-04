@@ -1,64 +1,40 @@
 <?php
-/*
-Plugin Name: Bingo Game
-Description: A plugin to add a Bingo game to WordPress posts and pages
-Version: 1.1
-Author: Your Name
-*/
+/**
+ * Plugin Name: Bingo Game
+ * Plugin URI: https://example.com
+ * Description: A fun Bingo game to play on your WordPress site. Great for listening exercises.
+ * Version: 1.0
+ * Author: Your Name
+ * Author URI: https://yourwebsite.com
+ * License: GPL2
+ */
 
-if (!defined('ABSPATH')) exit; // Exit if accessed directly
-
-class BingoGame {
-    private static $instance_count = 0;
-
-    public function __construct() {
-        add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
-        add_shortcode('bingo_game', array($this, 'bingo_game_shortcode'));
-    }
-
-    public function enqueue_scripts() {
-        wp_enqueue_style('bingo-game-style', plugins_url('css/style.css', __FILE__));
-        wp_enqueue_script('bingo-game-script', plugins_url('js/script.js', __FILE__), array('jquery'), '1.1', true);
-    }
-
-    public function bingo_game_shortcode($atts) {
-        self::$instance_count++;
-        $unique_id = 'bingo-game-' . self::$instance_count;
-
-        $words = isset($atts['words']) ? explode(',', $atts['words']) : [];
-        
-        // Ensure we have at least 16 words
-        while (count($words) < 16) {
-            $words[] = '';
-        }
-        
-        ob_start();
-        ?>
-        <div id="<?php echo esc_attr($unique_id); ?>" class="bingo-container">
-            <audio class="bingo-sound" src="<?php echo plugins_url('assets/bingo-sound.mp3', __FILE__); ?>"></audio>
-            <div class="container">
-                <h1>Wort-Bingo-Spiel</h1>
-                <div class="bingo-card"></div>
-            </div>
-            <div class="popup">
-                <div class="popup-content">
-                    <h2 class="popup-message">Reihe abgeschlossen!</h2>
-                    <button class="close-popup">Weiter</button>
-                </div>
-            </div>
-        </div>
-        <script>
-            if (typeof bingoGames === 'undefined') {
-                var bingoGames = [];
-            }
-            bingoGames.push({
-                id: <?php echo json_encode($unique_id); ?>,
-                words: <?php echo json_encode($words); ?>
-            });
-        </script>
-        <?php
-        return ob_get_clean();
-    }
+// Ensure no direct access to the file
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
 }
 
-new BingoGame();
+// Register and enqueue the plugin's styles and scripts
+function bingo_game_enqueue_scripts() {
+    wp_enqueue_style( 'bingo-game-style', plugin_dir_url( __FILE__ ) . 'style.css' );
+    wp_enqueue_script( 'bingo-game-script', plugin_dir_url( __FILE__ ) . 'script.js', array(), false, true );
+    wp_enqueue_script( 'bingo-game-sound', 'https://www.soundjay.com/button/sounds/button-3.mp3', array(), false, true );
+}
+add_action( 'wp_enqueue_scripts', 'bingo_game_enqueue_scripts' );
+
+// Create the Bingo Game Shortcode
+function bingo_game_shortcode() {
+    ob_start();
+    ?>
+    <h1>Bingo Spiel</h1>
+    <p>Höre gut zu und klicke die Wörter in der Reihenfolge, in der der Lehrer sie liest!</p>
+    <div id="bingo-board"></div>
+    <audio id="bingo-sound" src="https://www.soundjay.com/button/sounds/button-3.mp3" preload="auto"></audio>
+
+    <!-- Manual finish button -->
+    <button id="finish-button">Spiel Beenden</button>
+    <p id="score-display"></p>
+    <?php
+    return ob_get_clean();
+}
+add_shortcode( 'bingo_game', 'bingo_game_shortcode' );
