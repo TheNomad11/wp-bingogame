@@ -31,16 +31,16 @@ function bingo_game_shortcode( $atts ) {
         "Erdbeere", "Kiwi", "Kokosnuss", "Wassermelone"
     ];
 
-    // Get attributes from the shortcode
+    // Sanitize and validate shortcode attributes
     $atts = shortcode_atts( array(
         'words' => implode( ',', $default_words ),
         'correct_order' => 'Entwicklung,Parkplätze,Banane,Zugfahrkarten,Schmetterling,Wassermelone,Bewegung,Erdbeere,Information,Geschwindigkeit,Traube,Kokosnuss,Kiwi,Apfel,Orange',
     ), $atts, 'bingo_game' );
 
-    // Process words and correct order
-    $words = explode( ',', $atts['words'] );
-    $correct_order = explode( ',', $atts['correct_order'] );
-    
+    // Validate and sanitize the words and correct_order attributes
+    $words = array_map( 'sanitize_text_field', explode( ',', $atts['words'] ) );
+    $correct_order = array_map( 'sanitize_text_field', explode( ',', $atts['correct_order'] ) );
+
     // Path to the bingo-sound.mp3 in the plugin directory
     $sound_url = plugin_dir_url( __FILE__ ) . 'bingo-sound.mp3';
 
