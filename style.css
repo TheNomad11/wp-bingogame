@@ -1,59 +1,36 @@
-body {
+#bingo-game {
     font-family: Arial, sans-serif;
     text-align: center;
-    background-color: #f4f4f4;
-    margin: 0;
-    padding: 20px;
+    margin: 0 auto;
 }
 
-#bingo-board {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    margin: 20px auto;
-    max-width: 100%;
-}
-
-.bingo-cell {
+#bingo-game .bingo-cell {
+    display: inline-block;
     padding: 15px;
+    margin: 5px;
     border: 2px solid black;
     cursor: pointer;
-    transition: all 0.3s ease;
-    background-color: #f9f9f9;
     text-align: center;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    hyphens: auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 60px;
+    background-color: #f9f9f9;
+    width: 100px;
+    height: 100px;
+    line-height: 70px;
 }
 
-.bingo-cell.clicked {
+#bingo-game .bingo-cell.clicked {
     background-color: #8ccb2f;
     color: white;
-    pointer-events: none;
 }
 
-button {
+#bingo-game button {
+    margin-top: 20px;
+    padding: 10px 20px;
     background-color: #8ccb2f;
     color: white;
     border: none;
-    padding: 10px 20px;
-    font-size: 16px;
     cursor: pointer;
-    margin-top: 20px;
 }
 
-button:hover {
-    background-color: #6fa52a;
-}
-
-/* Mobile Layout Adjustments */
-@media (max-width: 600px) {
-    .bingo-cell {
-        padding: 10px; /* Reduce padding on mobile */
-        font-size: 14px; /* Reduce font size for better readability */
-    }
+#bingo-game button:hover {
+    background-color: #6a9a22;
 }
