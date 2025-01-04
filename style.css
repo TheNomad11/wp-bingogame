@@ -1,20 +1,25 @@
 /* Bingo Game Styles */
 .bingo-game-container {
     font-family: Arial, sans-serif;
-    text-align: center; /* Center the bingo game content */
+    text-align: center;
     margin: 0 auto;
+    padding: 0;
+    width: 100%;
 }
 
+/* Grid Layout for Bingo */
 .bingo-game-container #bingo-board {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 10px;
     margin: 20px auto;
     max-width: 100%;
+    padding: 0;
 }
 
+/* Bingo Cell Styles */
 .bingo-game-container .bingo-cell {
-    padding: 15px;
+    padding: 12px;
     border: 2px solid black;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -29,12 +34,14 @@
     min-height: 60px;
 }
 
+/* Bingo Cell Clicked Styles */
 .bingo-game-container .bingo-cell.clicked {
     background-color: #8ccb2f;
     color: white;
     pointer-events: none;
 }
 
+/* Button Styles */
 .bingo-game-container button {
     margin-top: 20px;
     padding: 10px 20px;
@@ -48,17 +55,23 @@
     background-color: #6a9a22;
 }
 
+/* Score Display */
 .bingo-game-container #score-display {
     margin-top: 10px;
 }
 
-/* Prevent affecting other page elements */
-body, ul, ol {
-    text-align: left !important;
-    margin: 0 !important;
-    padding: 0 !important;
+/* Prevent other page content styles from affecting Bingo */
+body, html {
+    margin: 0;
+    padding: 0;
 }
 
+ul, ol {
+    margin: 0;
+    padding: 0;
+}
+
+/* Bingo game content should not affect global text alignment */
 .bingo-game-container ul, .bingo-game-container ol {
-    text-align: initial !important;  /* Ensure lists in the Bingo game are unaffected */
+    text-align: initial !important;
 }
