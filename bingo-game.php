@@ -18,7 +18,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 function bingo_game_enqueue_scripts() {
     wp_enqueue_style( 'bingo-game-style', plugin_dir_url( __FILE__ ) . 'style.css' );
     wp_enqueue_script( 'bingo-game-script', plugin_dir_url( __FILE__ ) . 'script.js', array(), false, true );
-    wp_enqueue_script( 'bingo-game-sound', 'https://www.soundjay.com/button/sounds/button-3.mp3', array(), false, true );
 }
 add_action( 'wp_enqueue_scripts', 'bingo_game_enqueue_scripts' );
 
@@ -35,12 +34,15 @@ function bingo_game_shortcode( $atts ) {
     // Get attributes from the shortcode
     $atts = shortcode_atts( array(
         'words' => implode( ',', $default_words ),
-        'correct_order' => 'Entwicklung,Parkplätze,Banane,Zugfahrkarten,Schmetterling,Wassermelone,Bewegung,Erdbeere,Information,Geschwindigkeit,Traube,Kokosnuss,Kiwi,Apfel,Orange'
+        'correct_order' => 'Entwicklung,Parkplätze,Banane,Zugfahrkarten,Schmetterling,Wassermelone,Bewegung,Erdbeere,Information,Geschwindigkeit,Traube,Kokosnuss,Kiwi,Apfel,Orange',
     ), $atts, 'bingo_game' );
 
     // Process words and correct order
     $words = explode( ',', $atts['words'] );
     $correct_order = explode( ',', $atts['correct_order'] );
+    
+    // Path to the bingo-sound.mp3 in the plugin directory
+    $sound_url = plugin_dir_url( __FILE__ ) . 'bingo-sound.mp3';
 
     ob_start();
     ?>
@@ -48,6 +50,7 @@ function bingo_game_shortcode( $atts ) {
     <p>Höre gut zu und klicke die Wörter in der Reihenfolge, in der der Lehrer sie liest!</p>
     <div id="bingo-board"></div>
     <audio id="bingo-sound" src="https://www.soundjay.com/button/sounds/button-3.mp3" preload="auto"></audio>
+    <audio id="row-column-sound" src="<?php echo esc_url($sound_url); ?>" preload="auto"></audio>
 
     <!-- Manual finish button -->
     <button id="finish-button">Spiel Beenden</button>
@@ -57,7 +60,8 @@ function bingo_game_shortcode( $atts ) {
         // Define words and correct order dynamically from the shortcode
         const words = <?php echo json_encode($words); ?>;
         const correctSequence = <?php echo json_encode($correct_order); ?>;
-
+        const rowColumnSound = document.getElementById('row-column-sound');
+        
         const bingoBoard = document.getElementById('bingo-board');
         const bingoSound = document.getElementById('bingo-sound');
         const finishButton = document.getElementById('finish-button');
@@ -66,6 +70,13 @@ function bingo_game_shortcode( $atts ) {
         let board = [];
         let nextWordIndex = 0;  // Keeps track of the current word in the correct sequence
         let score = 0; // Track player score
+        const completedRows = new Set();
+        const rows = [
+            [0, 1, 2, 3],
+            [4, 5, 6, 7],
+            [8, 9, 10, 11],
+            [12, 13, 14, 15]
+        ];
 
         // Generate Bingo board
         function generateBoard() {
@@ -97,6 +108,20 @@ function bingo_game_shortcode( $atts ) {
             }
         }
 
+        // Check if any row or column is complete
+        function checkComplete() {
+            // Check rows
+            rows.forEach((row, rowIndex) => {
+                if (row.every(index => board[index].classList.contains('clicked'))) {
+                    if (!completedRows.has('row_' + rowIndex)) {
+                        completedRows.add('row_' + rowIndex);
+                        rowColumnSound.play(); // Play the row completion sound
+                        alert(`Reihe ${rowIndex + 1} ist fertig!`);
+                    }
+                }
+            });
+        }
+
         // Reset the game
         function resetGame() {
             board.forEach(cell => {
@@ -104,6 +129,7 @@ function bingo_game_shortcode( $atts ) {
             });
             nextWordIndex = 0;
             score = 0; // Reset score
+            completedRows.clear();
         }
 
         // Display the score manually when the button is clicked
@@ -118,6 +144,7 @@ function bingo_game_shortcode( $atts ) {
 
         // Initialize the game
         generateBoard();
+        setInterval(checkComplete, 500); // Check if a row or column is completed every 500ms
     </script>
 
     <?php
