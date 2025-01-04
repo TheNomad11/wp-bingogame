@@ -1,10 +1,11 @@
-#bingo-game {
+/* Wrap the whole Bingo game in a .bingo-game-container */
+.bingo-game-container {
     font-family: Arial, sans-serif;
-    text-align: center;
+    text-align: center; /* Only affects the Bingo game container */
     margin: 0 auto;
 }
 
-#bingo-game .bingo-cell {
+.bingo-game-container .bingo-cell {
     display: inline-block;
     padding: 15px;
     margin: 5px;
@@ -17,12 +18,12 @@
     line-height: 70px;
 }
 
-#bingo-game .bingo-cell.clicked {
+.bingo-game-container .bingo-cell.clicked {
     background-color: #8ccb2f;
     color: white;
 }
 
-#bingo-game button {
+.bingo-game-container button {
     margin-top: 20px;
     padding: 10px 20px;
     background-color: #8ccb2f;
@@ -31,6 +32,6 @@
     cursor: pointer;
 }
 
-#bingo-game button:hover {
+.bingo-game-container button:hover {
     background-color: #6a9a22;
 }
