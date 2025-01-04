@@ -25,11 +25,11 @@ document.addEventListener('DOMContentLoaded', function() {
             var cell = document.createElement('div');
             cell.className = 'bingo-cell';
             cell.textContent = words[i];
-            cell.addEventListener('click', function(i) {
-                return function() {
+            (function(i) {
+                cell.addEventListener('click', function() {
                     handleClick(cell, i);
-                };
-            }(i)); // Immediately Invoked Function Expression (IIFE)
+                });
+            })(i); // Immediately Invoked Function Expression (IIFE)
             bingoBoard.appendChild(cell);
             board.push(cell);
         }
@@ -38,23 +38,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Highlight the next required cells
     function highlightNextCells() {
-        rows.forEach(function(row, rowIndex) {
-            row.forEach(function(cellIndex) {
-                board[cellIndex].classList.remove('next');
-            });
+        for (var rowIndex = 0; rowIndex < rows.length; rowIndex++) {
+            for (var j = 0; j < rows[rowIndex].length; j++) {
+                board[rows[rowIndex][j]].classList.remove('next');
+            }
 
             if (!completedRows.has(rowIndex)) {
                 var nextIndex = rows[rowIndex][nextCellIndex[rowIndex]];
                 board[nextIndex].classList.add('next');
             }
-        });
+        }
     }
 
     // Handle cell click
     function handleClick(cell, index) {
-        var rowIndex = rows.findIndex(function(row) {
-            return row.indexOf(index) !== -1;
-        });
+        var rowIndex = -1;
+        for (var i = 0; i < rows.length; i++) {
+            if (rows[i].indexOf(index) !== -1) {
+                rowIndex = i;
+                break;
+            }
+        }
 
         if (rowIndex >= 0 && index === rows[rowIndex][nextCellIndex[rowIndex]]) {
             cell.classList.add('clicked');
@@ -86,9 +90,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Reset the game
     function resetGame() {
-        board.forEach(function(cell) {
-            cell.classList.remove('clicked', 'next');
-        });
+        for (var i = 0; i < board.length; i++) {
+            board[i].classList.remove('clicked', 'next');
+        }
         completedRows.clear();
         nextCellIndex = { 0: 0, 1: 0, 2: 0, 3: 0 };
         score = 0; // Reset score
