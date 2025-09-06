@@ -4,13 +4,13 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     const bingoBoard = document.getElementById("bingo-board");
-    const bingoSound = document.getElementById("bingo-sound");
     const scoreDisplay = document.getElementById("bingo-score");
-
     const words = bingoData.words;
     const board = [];
     let currentIndex = 0;
     let score = 0;
+
+    const bingoSound = new Audio(bingoData.sound);
 
     // Render board
     bingoBoard.style.display = "grid";
@@ -21,19 +21,10 @@ document.addEventListener("DOMContentLoaded", function () {
         const cell = document.createElement("div");
         cell.className = "bingo-cell";
         cell.textContent = word;
-        cell.style.border = "2px solid black";
-        cell.style.padding = "15px";
-        cell.style.textAlign = "center";
-        cell.style.background = "#f9f9f9";
-        cell.style.cursor = "pointer";
-        cell.style.hyphens = "auto";
-        cell.style.wordWrap = "break-word";
 
         cell.addEventListener("click", () => {
             if (i === currentIndex) {
-                cell.style.background = "#8ccb2f";
-                cell.style.color = "white";
-                cell.style.pointerEvents = "none";
+                cell.classList.add("clicked");
                 currentIndex++;
                 score++;
                 bingoSound.play();
