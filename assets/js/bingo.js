@@ -2,10 +2,19 @@ document.addEventListener('DOMContentLoaded', function () {
     if (typeof bingoData === 'undefined') return;
 
     var words = Array.isArray(bingoData.words) ? bingoData.words : [];
-    if (words.length !== 16) {
-        document.getElementById('bingo-board').innerHTML = '<div>Bitte genau 16 Wörter übergeben.</div>';
+     // rows = 3 for 3x3
+    if (words.length !== 9) {
+        bingoBoard.innerHTML = '<div style="color:red;">Bitte genau 9 Wörter eingeben.</div>';
         return;
-    }
+}
+
+
+
+    
+//    if (words.length !== 16) {
+//        document.getElementById('bingo-board').innerHTML = '<div>Bitte genau 16 Wörter übergeben.</div>';
+//        return;
+//    }
 
     var wordsShuffled = shuffleArray([...words]); // shuffle for display
     var currentIndex = 0;
