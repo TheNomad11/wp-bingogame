@@ -6,7 +6,13 @@ document.addEventListener("DOMContentLoaded", function () {
     const scoreDisplay = document.getElementById('score-display');
 
     // Use localized data
-    const words = Array.isArray(BingoData.words) ? BingoData.words : [];
+    const words = bingoData.words.length === 16 ? bingoData.words : [
+    "Parkplätze", "Zugfahrkarten", "Entwicklung", "Schmetterling",
+    "Verantwortung", "Bewegung", "Geschwindigkeit", "Information",
+    "Apfel", "Banane", "Orange", "Traube",
+    "Erdbeere", "Kiwi", "Kokosnuss", "Wassermelone"
+];
+   
     const audioUrl = BingoData.audioUrl || '';
 
     if (audioUrl && bingoSoundEl) {
