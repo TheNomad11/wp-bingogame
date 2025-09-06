@@ -15,7 +15,7 @@ function wp_bingo_enqueue() {
 }
 add_action('wp_enqueue_scripts', 'wp_bingo_enqueue');
 
-// Shortcode [bingo_listening words="..."] for 3x3
+// Shortcode [bingo_listening words="..."]
 function wp_bingo_shortcode($atts) {
     $atts = shortcode_atts(array('words'=>''), $atts);
     $words_array = array_map('trim', explode(',', $atts['words']));
