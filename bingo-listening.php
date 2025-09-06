@@ -2,23 +2,30 @@
 /*
 Plugin Name: Bingo Listening Game
 Description: Simple Bingo listening game via shortcode [bingo_listening words="word1,word2,..."].
-Version: 1.3
+Version: 1.0
 Author: You
 */
 
-if (!defined('ABSPATH')) exit; // no direct access
+if (!defined('ABSPATH')) exit;
 
-// Register scripts
-function bingo_listening_enqueue_scripts() {
-    wp_register_script(
+// Enqueue assets
+function bingo_listening_enqueue_assets() {
+    wp_enqueue_style(
+        'bingo-style',
+        plugin_dir_url(__FILE__) . 'assets/css/bingo.css',
+        array(),
+        '1.0'
+    );
+
+    wp_enqueue_script(
         'bingo-script',
-        plugin_dir_url(__FILE__) . 'bingo-script.js',
+        plugin_dir_url(__FILE__) . 'assets/js/bingo.js',
         array(),
         '1.0',
         true
     );
 }
-add_action('wp_enqueue_scripts', 'bingo_listening_enqueue_scripts');
+add_action('wp_enqueue_scripts', 'bingo_listening_enqueue_assets');
 
 // Shortcode
 function bingo_listening_shortcode($atts) {
@@ -32,10 +39,10 @@ function bingo_listening_shortcode($atts) {
 
     $words = array_map('trim', explode(',', $atts['words']));
 
-    // Pass words to JS
-    wp_enqueue_script('bingo-script');
+    // Pass words + sound URL to JS
     wp_localize_script('bingo-script', 'bingoData', array(
-        'words' => $words
+        'words' => $words,
+        'sound' => plugin_dir_url(__FILE__) . 'assets/sounds/bingo.mp3'
     ));
 
     return '
@@ -43,7 +50,6 @@ function bingo_listening_shortcode($atts) {
             <h2>Bingo Listening Game</h2>
             <p>Klicke die Wörter in der richtigen Reihenfolge!</p>
             <div id="bingo-board"></div>
-            <audio id="bingo-sound" src="https://www.soundjay.com/button/sounds/button-3.mp3" preload="auto"></audio>
             <div id="bingo-score">Punkte: 0</div>
         </div>
     ';
