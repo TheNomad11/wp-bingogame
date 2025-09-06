@@ -2,13 +2,19 @@ document.addEventListener("DOMContentLoaded", function () {
     if (typeof BingoData === "undefined") return;
 
     const bingoBoard = document.getElementById('bingo-board');
-    const bingoSound = document.getElementById('bingo-sound');
+    const bingoSoundEl = document.getElementById('bingo-sound');
     const scoreDisplay = document.getElementById('score-display');
 
-    const words = BingoData.words;
+    // Use localized data
+    const words = Array.isArray(BingoData.words) ? BingoData.words : [];
+    const audioUrl = BingoData.audioUrl || '';
+
+    if (audioUrl && bingoSoundEl) {
+        bingoSoundEl.src = audioUrl;
+    }
 
     let board = [];
-    let nextCellIndex = { 0: 0, 1: 0, 2: 0, 3: 0 }; 
+    let nextCellIndex = { 0: 0, 1: 0, 2: 0, 3: 0 };
     const rows = [
         [0, 1, 2, 3],
         [4, 5, 6, 7],
@@ -20,14 +26,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function updateScore(change) {
         score += change;
-        scoreDisplay.textContent = "Punkte: " + score;
+        if (scoreDisplay) scoreDisplay.textContent = "Punkte: " + score;
     }
 
     function generateBoard() {
+        // clear board if rerun
+        bingoBoard.innerHTML = '';
+        board = [];
+
         for (let i = 0; i < 16; i++) {
             const cell = document.createElement('div');
             cell.className = 'bingo-cell';
-            cell.textContent = words[i] || "Leer";
+            cell.textContent = words[i] || "";
             cell.addEventListener('click', () => handleClick(cell, i));
             bingoBoard.appendChild(cell);
             board.push(cell);
@@ -56,7 +66,9 @@ document.addEventListener("DOMContentLoaded", function () {
             updateScore(1);
 
             if (nextCellIndex[rowIndex] === 4) {
-                bingoSound.play();
+                if (bingoSoundEl && typeof bingoSoundEl.play === 'function') {
+                    bingoSoundEl.play().catch(function(){ /* autoplay restrictions may block - played on user interaction */ });
+                }
                 alert(`Reihe ${rowIndex + 1} ist fertig!`);
                 completedRows.add(rowIndex);
             }
@@ -72,7 +84,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function checkWin() {
         if (completedRows.size === rows.length) {
-            alert("Alle Reihen sind fertig! Bingo!\nEndstand: " + score + " Punkte");
+            alert("Alle Reihen sind fertig! Bingo!
+Endstand: " + score + " Punkte");
         }
     }
 
