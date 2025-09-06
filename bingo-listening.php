@@ -1,25 +1,30 @@
 <?php
 /*
 Plugin Name: Bingo Listening Game
-Description: A simple Bingo game for listening exercises where students must click words in the correct order.
-Version: 1.1
+Description: A simple Bingo game for listening exercises where students must click words in the correct order. Words are editable from the settings page.
+Version: 1.2
 Author: Your Name
 */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-// Enqueue scripts and styles
+// Enqueue scripts and styles and pass data to JS
 function bingo_listening_enqueue_scripts() {
     wp_enqueue_style( 'bingo-listening-style', plugins_url( 'assets/bingo.css', __FILE__ ) );
 
-    // Get words from settings, or use defaults
-    $words = get_option( 'bingo_listening_words', 'Apfel,Banane,Orange,Traube,Erdbeere,Kiwi,Kokosnuss,Wassermelone,Parkplätze,Zugfahrkarten,Entwicklung,Schmetterling,Verantwortung,Bewegung,Geschwindigkeit,Information' );
-    $words_array = array_map( 'trim', explode( ',', $words ) );
+    // Get words from settings, or use defaults (16 words expected)
+    $default = 'Parkplätze,Zugfahrkarten,Entwicklung,Schmetterling,Verantwortung,Bewegung,Geschwindigkeit,Information,Apfel,Banane,Orange,Traube,Erdbeere,Kiwi,Kokosnuss,Wassermelone';
+    $words = get_option( 'bingo_listening_words', $default );
+    $words_array = array_values( array_map( 'trim', explode( ',', $words ) ) );
+
+    // Audio file bundled in plugin
+    $audio_url = plugins_url( 'assets/sounds/bingo.mp3', __FILE__ );
 
     wp_enqueue_script( 'bingo-listening-script', plugins_url( 'assets/bingo.js', __FILE__ ), array(), false, true );
     wp_localize_script( 'bingo-listening-script', 'BingoData', array(
-        'words' => $words_array
-    ));
+        'words' => $words_array,
+        'audioUrl' => $audio_url,
+    ) );
 }
 add_action( 'wp_enqueue_scripts', 'bingo_listening_enqueue_scripts' );
 
@@ -31,7 +36,8 @@ function bingo_listening_shortcode() {
         <p>Klicke die Wörter in der richtigen Reihenfolge!</p>
         <div id="bingo-board"></div>
         <div id="score-display">Punkte: 0</div>
-        <audio id="bingo-sound" src="https://www.soundjay.com/button/sounds/button-3.mp3" preload="auto"></audio>
+        <!-- audio element: src will be set by JS using localized BingoData.audioUrl -->
+        <audio id="bingo-sound" preload="auto"></audio>
     </div>
     <?php
     return ob_get_clean();
@@ -85,5 +91,7 @@ function bingo_listening_options_page() { ?>
             submit_button();
             ?>
         </form>
+        <h2>Sound-Datei</h2>
+        <p>Lege eine Audiodatei namens <code>bingo.mp3</code> in den Ordner <code>assets/sounds/</code> des Plugins (z. B. <code>wp-content/plugins/bingo-listening/assets/sounds/bingo.mp3</code>). Die URL wird automatisch an das Skript übergeben.</p>
     </div>
 <?php }
