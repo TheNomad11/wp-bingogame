@@ -1,29 +1,48 @@
-#bingo-board {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    margin: 20px auto;
-    max-width: 100%;
+/* assets/css/bingo.css */
+.bingo-container { max-width: 900px; margin: 10px auto; padding: 0 10px; }
+#bingo-board.bingo-board { margin: 10px 0; }
+
+/* 4x4 grid */
+.bingo-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
 }
 
+/* cells as buttons (accessible) */
 .bingo-cell {
-    padding: 15px;
-    border: 2px solid black;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    background-color: #f9f9f9;
-    text-align: center;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    hyphens: auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 60px;
+  padding: 14px;
+  border: 2px solid black;
+  background: #f9f9f9;
+  text-align: center;
+  cursor: pointer;
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  word-wrap: break-word;
+  hyphens: auto;
+  font-size: 1rem;
 }
 
+/* clicked state */
 .bingo-cell.clicked {
-    background-color: #8ccb2f;
-    color: white;
-    pointer-events: none;
+  background: #8ccb2f;
+  color: #fff;
+  border-color: #6aa728;
+}
+
+/* error message if wrong word count */
+.bingo-error {
+  color: #b00;
+  background: #ffecec;
+  padding: 12px;
+  border: 1px solid #f5c2c2;
+  border-radius: 4px;
+}
+
+/* small screens: reduce font-size and allow readable wrapping */
+@media (max-width: 420px) {
+  .bingo-cell { font-size: 0.9rem; padding: 10px; min-height: 56px; }
+  .bingo-grid { gap: 8px; }
 }
