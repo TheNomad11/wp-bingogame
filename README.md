@@ -1,18 +1,16 @@
 # Bingogame - An experimental Bingo plugin for Wordpress
-Made together with Chatgpt and Perplexity.ai. I still have to do some testing. 
+Developed with the assistance of ChatGPT and Perplexity.ai. I'm still conducting some testing.  
 
-A text is read and you have a bingo field with 16 words that appear in the text. You have to click the words when you hear them for the first time. To be used in language learning as a listening excercise
+This plugin creates a bingo game based on a text. A 3x3 grid of words from the text appears, and players click the words as they hear them for the first time. It’s designed to be used as a listening exercise for language learners.  
 
 
 ## Usage
 
-To use this plugin in a WordPress post or page, add the following shortcode. First you define 16 bingo words, then you define the correct order of the words.  
+To use this plugin in a WordPress post or page, insert the following shortcode, replacing the example words with your desired nine words in the correct order.  For example:  
 
 <code>
-[bingo_game words="Parkplätze,Zugfahrkarten,Entwicklung,Schmetterling,Verantwortung,Bewegung,Apfel,Banane,Orange,Traube,Erdbeere,Kiwi,Kokosnuss,Wassermelone, Tomate, Gurke" correct_order="Entwicklung,Parkplätze,Banane,Zugfahrkarten,Schmetterling, Verantwortung, Gurke, Tomate, Orange, Kiwi, Wassermelone, Erdbeere, Bewegung, Apfel, Traube, Kokosnuss" ]
+[bingo_listening words="Parkplätze,Zugfahrkarten,Entwicklung,Schmetterling,Verantwortung,Bewegung,Apfel,Banane,Orange" ]
 </code>
 
-
-If all cards  in a row or column are completed, a sound appears. 
-
+A sound effect plays when a row or column is completed.  
 
