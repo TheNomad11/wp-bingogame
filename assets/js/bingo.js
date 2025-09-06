@@ -1,76 +1,93 @@
-document.addEventListener('DOMContentLoaded', function () {
-    if (typeof bingoData === 'undefined') return;
+// assets/js/bingo.js
 
-    var words = Array.isArray(bingoData.words) ? bingoData.words : [];
-     // rows = 3 for 3x3
-    if (words.length !== 9) {
-        bingoBoard.innerHTML = '<div style="color:red;">Bitte genau 9 Wörter eingeben.</div>';
-        return;
+const bingoBoard = document.getElementById('bingo-board');
+const bingoSound = new Audio(bingoData.sound);
+const words = bingoData.words;
+const size = 3; // 3x3 grid
+
+let board = [];
+let nextCellIndex = {};
+for (let r = 0; r < size; r++) nextCellIndex[r] = 0;
+
+// Define rows dynamically
+const rows = [];
+for (let r = 0; r < size; r++) {
+    rows.push([]);
+    for (let c = 0; c < size; c++) {
+        rows[r].push(r * size + c);
+    }
 }
 
+const completedRows = new Set();
+let score = 0;
 
+function generateBoard() {
+    // Shuffle words for display
+    const shuffledWords = [...words].sort(() => Math.random() - 0.5);
 
-    var wordsShuffled = shuffleArray([...words]); // shuffle for display
-    var currentIndex = 0;
-    var score = 0;
-
-    var bingoBoard = document.getElementById('bingo-board');
-    var scoreDisplay = document.getElementById('bingo-score');
-    bingoBoard.innerHTML = '';
-
-    var bingoSound = bingoData.sound ? new Audio(bingoData.sound) : null;
-
-    function updateScore(delta) {
-        score += delta;
-        if (scoreDisplay) scoreDisplay.textContent = 'Punkte: ' + score;
-    }
-
-    function handleCorrectClick(cell) {
-        cell.classList.add('clicked');
-        cell.style.pointerEvents = 'none';
-        updateScore(1);
-        if (bingoSound) bingoSound.play().catch(()=>{});
-        currentIndex++;
-        if (currentIndex === words.length) {
-            setTimeout(() => alert('Super! Alle Wörter korrekt angeklickt!\nEndstand: ' + score + ' Punkte'), 100);
-        }
-    }
-
-    function handleWrongClick() {
-        updateScore(-1);
-        alert('Falsches Wort!');
-    }
-
-    console.log('Original order:', words);
-console.log('Shuffled order:', wordsShuffled);
-
-    
-    // Build board strictly from shuffled array
-    wordsShuffled.forEach(function(word){
-        var cell = document.createElement('button');
-        cell.type = 'button';
+    for (let i = 0; i < shuffledWords.length; i++) {
+        const cell = document.createElement('div');
         cell.className = 'bingo-cell';
-        cell.textContent = word;
-
-        // store original listening order index
-        cell.dataset.correctIndex = words.indexOf(word);
-
-        cell.addEventListener('click', function(){
-            var idx = parseInt(this.dataset.correctIndex, 10);
-            if (idx === currentIndex) handleCorrectClick(this);
-            else handleWrongClick();
-        });
-
+        cell.textContent = shuffledWords[i];
+        cell.addEventListener('click', () => handleClick(cell, i));
         bingoBoard.appendChild(cell);
-    });
-
-    updateScore(0);
-
-    function shuffleArray(array){
-        for (let i = array.length - 1; i > 0; i--){
-            const j = Math.floor(Math.random()*(i+1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-        return array;
+        board.push(cell);
     }
-});
+    highlightNextCells();
+}
+
+function highlightNextCells() {
+    rows.forEach((row, rowIndex) => {
+        row.forEach(cellIndex => board[cellIndex].classList.remove('next'));
+        if (!completedRows.has(rowIndex)) {
+            const nextIndex = rows[rowIndex][nextCellIndex[rowIndex]];
+            board[nextIndex].classList.add('next');
+        }
+    });
+}
+
+function handleClick(cell, index) {
+    const rowIndex = rows.findIndex(row => row.includes(index));
+    if (rowIndex >= 0 && index === rows[rowIndex][nextCellIndex[rowIndex]]) {
+        cell.classList.add('clicked');
+        nextCellIndex[rowIndex]++;
+        score++;
+        updateScore();
+
+        if (nextCellIndex[rowIndex] === size) {
+            bingoSound.play();
+            alert(`Reihe ${rowIndex + 1} ist fertig!`);
+            completedRows.add(rowIndex);
+        }
+        checkWin();
+    } else {
+        score--;
+        updateScore();
+        alert('Falsches Feld! Folge der richtigen Reihenfolge.');
+    }
+    highlightNextCells();
+}
+
+function checkWin() {
+    if (completedRows.size === rows.length) {
+        alert(`Alle Reihen sind fertig! Gesamtpunkte: ${score}`);
+        resetGame();
+    }
+}
+
+function resetGame() {
+    board.forEach(cell => cell.classList.remove('clicked', 'next'));
+    completedRows.clear();
+    for (let r = 0; r < size; r++) nextCellIndex[r] = 0;
+    score = 0;
+    updateScore();
+    highlightNextCells();
+}
+
+function updateScore() {
+    const scoreDiv = document.getElementById('bingo-score');
+    if(scoreDiv) scoreDiv.textContent = `Punkte: ${score}`;
+}
+
+// Initialize the game
+generateBoard();
