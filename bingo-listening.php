@@ -29,20 +29,24 @@ function bingo_listening_enqueue_scripts() {
 add_action( 'wp_enqueue_scripts', 'bingo_listening_enqueue_scripts' );
 
 // Shortcode to display the game
-function bingo_listening_shortcode() {
-    ob_start(); ?>
-    <div id="bingo-game">
-        <h2>Bingo Listening</h2>
-        <p>Klicke die Wörter in der richtigen Reihenfolge!</p>
-        <div id="bingo-board"></div>
-        <div id="score-display">Punkte: 0</div>
-        <!-- audio element: src will be set by JS using localized BingoData.audioUrl -->
-        <audio id="bingo-sound" preload="auto"></audio>
-    </div>
-    <?php
-    return ob_get_clean();
+function bingo_listening_shortcode($atts) {
+    $atts = shortcode_atts(
+        array(
+            'words' => '' // default: no words
+        ),
+        $atts,
+        'bingo_listening'
+    );
+
+    // Pass words to JavaScript
+    wp_enqueue_script('bingo-script');
+    wp_localize_script('bingo-script', 'bingoData', array(
+        'words' => explode(',', $atts['words'])
+    ));
+
+    return '<div id="bingo-board"></div><audio id="bingo-sound" src="https://www.soundjay.com/button/sounds/button-3.mp3" preload="auto"></audio>';
 }
-add_shortcode( 'bingo_listening', 'bingo_listening_shortcode' );
+add_shortcode('bingo_listening', 'bingo_listening_shortcode');
 
 // --- Settings Page ---
 function bingo_listening_add_admin_menu() {
