@@ -28,9 +28,10 @@ function wp_bingo_shortcode($atts) {
 
     $words_array = array_map('trim', explode(',', $atts['words']));
 
-    if (count($words_array) !== $size * $size) {
-        return '<div style="color:red;">Bitte genau '.($size*$size).' Wörter eingeben für ein '.$size.'x'.$size.' Bingo.</div>';
-    }
+if (count($words_array) !== 9) {
+    return '<div style="color:red;">Bitte genau 9 Wörter eingeben.</div>';
+}
+
 
     // Pass data to JS
     $sound_url = plugin_dir_url(__FILE__).'assets/sounds/bingo.mp3';
