@@ -2,7 +2,7 @@
 /*
 Plugin Name: Bingo Listening Game
 Description: Simple Bingo listening game via shortcode [bingo_listening words="word1,word2,..."].
-Version: 1.0
+Version: 1.1
 Author: You
 */
 
@@ -10,14 +10,14 @@ if (!defined('ABSPATH')) exit;
 
 // Enqueue assets
 function bingo_listening_enqueue_assets() {
-    wp_enqueue_style(
+    wp_register_style(
         'bingo-style',
         plugin_dir_url(__FILE__) . 'assets/css/bingo.css',
         array(),
         '1.0'
     );
 
-    wp_enqueue_script(
+    wp_register_script(
         'bingo-script',
         plugin_dir_url(__FILE__) . 'assets/js/bingo.js',
         array(),
@@ -39,7 +39,10 @@ function bingo_listening_shortcode($atts) {
 
     $words = array_map('trim', explode(',', $atts['words']));
 
-    // Pass words + sound URL to JS
+    // Enqueue here, so data is always localized after the shortcode is used
+    wp_enqueue_style('bingo-style');
+    wp_enqueue_script('bingo-script');
+
     wp_localize_script('bingo-script', 'bingoData', array(
         'words' => $words,
         'sound' => plugin_dir_url(__FILE__) . 'assets/sounds/bingo.mp3'
