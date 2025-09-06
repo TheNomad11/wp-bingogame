@@ -16,19 +16,28 @@ function wp_bingo_enqueue() {
 add_action('wp_enqueue_scripts', 'wp_bingo_enqueue');
 
 // Shortcode [bingo_listening words="..."]
+// Shortcode [bingo_listening words="..." size="4"]
 function wp_bingo_shortcode($atts) {
-    $atts = shortcode_atts(array('words'=>''), $atts);
+    $atts = shortcode_atts(array(
+        'words' => '',
+        'size'  => '4', // default 4x4
+    ), $atts);
+
+    $size = intval($atts['size']);
+    if (!in_array($size, [3, 4])) $size = 4; // fallback
+
     $words_array = array_map('trim', explode(',', $atts['words']));
 
-    if (count($words_array) !== 16) {
-        return '<div style="color:red;">Bitte genau 16 Wörter eingeben.</div>';
+    if (count($words_array) !== $size * $size) {
+        return '<div style="color:red;">Bitte genau '.($size*$size).' Wörter eingeben für ein '.$size.'x'.$size.' Bingo.</div>';
     }
 
-    // Pass to JS
+    // Pass data to JS
     $sound_url = plugin_dir_url(__FILE__).'assets/sounds/bingo.mp3';
     wp_localize_script('bingo-js', 'bingoData', array(
         'words' => $words_array,
-        'sound' => $sound_url
+        'sound' => $sound_url,
+        'size'  => $size
     ));
 
     // Board HTML + score
@@ -38,3 +47,4 @@ function wp_bingo_shortcode($atts) {
     return $html;
 }
 add_shortcode('bingo_listening', 'wp_bingo_shortcode');
+
