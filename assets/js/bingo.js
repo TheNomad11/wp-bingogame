@@ -17,7 +17,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var bingoSound = bingoData.sound ? new Audio(bingoData.sound) : null;
 
-    // Helper functions
     function updateScore(delta) {
         score += delta;
         if (scoreDisplay) scoreDisplay.textContent = 'Punkte: ' + score;
@@ -39,14 +38,14 @@ document.addEventListener('DOMContentLoaded', function () {
         alert('Falsches Wort!');
     }
 
-    // Build board in shuffled order
+    // Build board strictly from shuffled array
     wordsShuffled.forEach(function(word){
         var cell = document.createElement('button');
         cell.type = 'button';
         cell.className = 'bingo-cell';
         cell.textContent = word;
 
-        // store original order index
+        // store original listening order index
         cell.dataset.correctIndex = words.indexOf(word);
 
         cell.addEventListener('click', function(){
@@ -60,7 +59,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     updateScore(0);
 
-    // Fisher–Yates shuffle
     function shuffleArray(array){
         for (let i = array.length - 1; i > 0; i--){
             const j = Math.floor(Math.random()*(i+1));
