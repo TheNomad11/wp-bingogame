@@ -38,6 +38,10 @@ document.addEventListener('DOMContentLoaded', function () {
         alert('Falsches Wort!');
     }
 
+    console.log('Original order:', words);
+console.log('Shuffled order:', wordsShuffled);
+
+    
     // Build board strictly from shuffled array
     wordsShuffled.forEach(function(word){
         var cell = document.createElement('button');
