@@ -2,14 +2,15 @@
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 10px;
-    max-width: 100%;
     margin: 20px auto;
+    max-width: 100%;
 }
 
 .bingo-cell {
     padding: 15px;
     border: 2px solid black;
     cursor: pointer;
+    transition: all 0.3s ease;
     background-color: #f9f9f9;
     text-align: center;
     word-wrap: break-word;
@@ -19,16 +20,10 @@
     align-items: center;
     justify-content: center;
     min-height: 60px;
-    transition: all 0.3s ease;
 }
 
 .bingo-cell.clicked {
     background-color: #8ccb2f;
     color: white;
     pointer-events: none;
-}
-
-/* Next cell indicator - keep subtle and black (same border) */
-.bingo-cell.next {
-    box-shadow: 0 0 0 3px rgba(0,0,0,0.06) inset; /* subtle focus */
 }
