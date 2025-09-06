@@ -10,12 +10,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-    
-//    if (words.length !== 16) {
-//        document.getElementById('bingo-board').innerHTML = '<div>Bitte genau 16 Wörter übergeben.</div>';
-//        return;
-//    }
-
     var wordsShuffled = shuffleArray([...words]); // shuffle for display
     var currentIndex = 0;
     var score = 0;
