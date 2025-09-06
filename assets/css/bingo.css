@@ -10,26 +10,28 @@
 }
 
 /* cells as buttons (accessible) */
+/* Unclicked cells: black text */
 .bingo-cell {
-  padding: 14px;
-  border: 2px solid black;
-  background: #f9f9f9;
-  text-align: center;
-  cursor: pointer;
-  min-height: 64px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  word-wrap: break-word;
-  hyphens: auto;
-  font-size: 1rem;
+    padding: 14px;
+    border: 2px solid black;
+    background: #f9f9f9;
+    text-align: center;
+    cursor: pointer;
+    min-height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    word-wrap: break-word;
+    hyphens: auto;
+    font-size: 1rem;
+    color: #000;       /* <-- make sure default text is black */
 }
 
-/* clicked state */
+/* Clicked state */
 .bingo-cell.clicked {
-  background: #8ccb2f;
-  color: #fff;
-  border-color: #6aa728;
+    background: #8ccb2f;
+    color: #fff;      /* white text on green background */
+    border-color: #6aa728;
 }
 
 /* error message if wrong word count */
