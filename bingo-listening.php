@@ -1,63 +1,40 @@
 <?php
 /*
-Plugin Name: Bingo Listening Game
-Description: Simple Bingo listening game via shortcode [bingo_listening words="w1,w2,..."].
-Version: 1.0.1
-Author: You
+Plugin Name: WP Bingo Listening
+Description: 4x4 Bingo listening exercise with clickable words in correct order.
+Version: 1.0
+Author: Your Name
 */
 
 if (!defined('ABSPATH')) exit;
 
-// Register/enqueue CSS & JS only when shortcode used
-function bingo_listening_enqueue_assets() {
-    // Register assets (will be enqueued when shortcode runs)
-    wp_register_style(
-        'bingo-style',
-        plugin_dir_url(__FILE__) . 'assets/css/bingo.css',
-        array(),
-        '1.0.1'
-    );
-
-    wp_register_script(
-        'bingo-script',
-        plugin_dir_url(__FILE__) . 'assets/js/bingo.js',
-        array(),
-        '1.0.1',
-        true
-    );
+// Enqueue scripts and styles
+function wp_bingo_enqueue() {
+    wp_enqueue_style('bingo-css', plugin_dir_url(__FILE__).'assets/css/bingo.css');
+    wp_enqueue_script('bingo-js', plugin_dir_url(__FILE__).'assets/js/bingo.js', array(), false, true);
 }
-add_action('wp_enqueue_scripts', 'bingo_listening_enqueue_assets');
+add_action('wp_enqueue_scripts', 'wp_bingo_enqueue');
 
-// Shortcode handler
-function bingo_listening_shortcode($atts) {
-    $atts = shortcode_atts(
-        array(
-            'words' => ''
-        ),
-        $atts,
-        'bingo_listening'
-    );
+// Shortcode [bingo_listening words="..."]
+function wp_bingo_shortcode($atts) {
+    $atts = shortcode_atts(array('words'=>''), $atts);
+    $words_array = array_map('trim', explode(',', $atts['words']));
 
-    $words = array_filter(array_map('trim', explode(',', $atts['words'])));
+    if (count($words_array) !== 16) {
+        return '<div style="color:red;">Bitte genau 16 Wörter eingeben.</div>';
+    }
 
-    // Enqueue the assets now (only when shortcode is present)
-    wp_enqueue_style('bingo-style');
-    wp_enqueue_script('bingo-script');
-
-    // Pass data to JS
-    wp_localize_script('bingo-script', 'bingoData', array(
-        'words' => array_values($words), // indexed array
-        'sound' => plugin_dir_url(__FILE__) . 'assets/sounds/bingo.mp3'
+    // Pass to JS
+    $sound_url = plugin_dir_url(__FILE__).'assets/sounds/bingo.mp3';
+    wp_localize_script('bingo-js', 'bingoData', array(
+        'words' => $words_array,
+        'sound' => $sound_url
     ));
 
-    // Return the HTML container(s)
-    return '
-        <div id="bingo-container" class="bingo-container">
-            <h2>Bingo Listening Game</h2>
-            <p>Klicke die Wörter in der richtigen Reihenfolge!</p>
-            <div id="bingo-board" class="bingo-board" aria-live="polite"></div>
-            <div id="bingo-score" class="bingo-score">Punkte: 0</div>
-        </div>
-    ';
+    // Board HTML + score
+    $html  = '<div id="bingo-score">Punkte: 0</div>';
+    $html .= '<div id="bingo-board" class="bingo-grid"></div>';
+
+    return $html;
 }
-add_shortcode('bingo_listening', 'bingo_listening_shortcode');
+add_shortcode('bingo_listening', 'wp_bingo_shortcode');
