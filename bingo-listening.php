@@ -19,7 +19,7 @@ function bl_bingo_shortcode( $atts ) {
         'text' => '',
     ), $atts );
 
-    $text = $atts['text'];
+    $text = sanitize_text_field( $atts['text'] );
     if ( empty( $text ) ) return 'Please provide text in the shortcode: [bingo_listening text="your text here"]';
 
     $words = preg_split( '/\s+/', preg_replace( '/[^\p{L}\s]/u', '', $text ) );
