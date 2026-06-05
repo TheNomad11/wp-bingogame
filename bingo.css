@@ -1,0 +1,99 @@
+/* 1. MAIN CONTAINER: Ensures everything is centered on the page */
+#bingo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    justify-content: center;
+    width: 100%;
+    margin: 0 auto;
+    text-align: center;
+}
+
+/* 2. SCORE DISPLAY */
+#bingo-score-display {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 15px;
+    width: 100%;
+    text-align: center;
+}
+
+/* 3. THE GRID: Centered and responsive width */
+.bingo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    max-width: 500px; 
+    width: 95%; 
+    margin: 0 auto; 
+    justify-content: center;
+}
+
+/* 4. THE CELLS: Combined centering and text-wrapping logic */
+.bingo-cell {
+    padding: 20px;
+    border: 2px solid #333;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: #fff;
+    text-align: center;
+    
+    /* Original Responsive Text Logic */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 70px;
+    font-weight: bold;
+    font-size: 1em;
+    user-select: none;
+}
+
+.bingo-cell.marked {
+    background-color: #4CAF50;
+    color: white;
+    border-color: #388E3C;
+}
+
+.bingo-cell.wrong {
+    background-color: #ffcccc;
+    border-color: #ff0000;
+    transform: scale(0.95);
+}
+
+/* 5. GAME OVER MESSAGE */
+#bingo-message {
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-top: 20px;
+    color: #2e7d32;
+    width: 100%;
+}
+
+/* 6. RESPONSIVE ADJUSTMENTS (Restored from original CSS) */
+@media (max-width: 600px) {
+    .bingo-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+    .bingo-cell {
+        padding: 15px;
+        font-size: 0.9em;
+        min-height: 60px;
+    }
+}
+
+@media (max-width: 400px) {
+    .bingo-cell {
+        padding: 10px;
+        font-size: 0.8em;
+        min-height: 50px;
+    }
+    #bingo-message {
+        font-size: 1.2em;
+    }
+}
