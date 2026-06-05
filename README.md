@@ -30,7 +30,7 @@ A lightweight WordPress plugin designed for language learners. This plugin trans
 Use the shortcode below in any post or page. Instead of a list of words, you provide the full text you are using for the listening exercise.
 
 ### Shortcode Syntax
-`[bingo_listening text="Your full text goes here..."]`
+`[bingo_listening text="Your selected words go here..."]`
 
 ### Example
 `[bingo_listening text="Müll ehrenamtlich Flüchtlinge Umwelt vermeiden Wegwerfgesellschaft Rohstoffe Lebensstil nachhaltig"]`
