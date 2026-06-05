@@ -1,40 +1,70 @@
 <?php
 /*
-Plugin Name: WP Bingo Listening 3x3
-Description: 3x3 Bingo listening exercise with clickable words in correct order.
-Version: 1.0
-Author: Your Name
+Plugin Name: Bingo Listening Exercise
+Description: A bingo game for language learners based on a text.
+Version: 1.2
+Author: TheNomad11
 */
 
-if (!defined('ABSPATH')) exit;
+if ( ! defined( 'ABSPATH' ) ) exit;
 
-// Enqueue scripts and styles
-function wp_bingo_enqueue() {
-    wp_enqueue_style('bingo-css', plugin_dir_url(__FILE__).'assets/css/bingo.css');
-    wp_enqueue_script('bingo-js', plugin_dir_url(__FILE__).'assets/js/bingo.js', array(), false, true);
+function bl_enqueue_scripts() {
+    wp_enqueue_style( 'bl-style', plugins_url( 'bingo.css', __FILE__ ) );
+    wp_enqueue_script( 'bl-script', plugins_url( 'bingo.js', __FILE__ ), array(), '1.2', true );
 }
-add_action('wp_enqueue_scripts', 'wp_bingo_enqueue');
+add_action( 'wp_enqueue_scripts', 'bl_enqueue_scripts' );
 
-// Shortcode [bingo_listening words="..."]
-function wp_bingo_shortcode($atts) {
-    $atts = shortcode_atts(array('words'=>''), $atts);
-    $words_array = array_map('trim', explode(',', $atts['words']));
+function bl_bingo_shortcode( $atts ) {
+    $atts = shortcode_atts( array(
+        'text' => '',
+    ), $atts );
 
-    if (count($words_array) !== 9) {
-        return '<div style="color:red;">Bitte genau 9 Wörter eingeben.</div>';
+    $text = $atts['text'];
+    if ( empty( $text ) ) return 'Please provide text in the shortcode: [bingo_listening text="your text here"]';
+
+    $words = preg_split( '/\s+/', preg_replace( '/[^\p{L}\s]/u', '', $text ) );
+    $words = array_filter( $words ); 
+    $words = array_values( array_unique( $words ) ); 
+
+    if ( count( $words ) < 9 ) {
+        return 'The text is too short. Please provide a text with at least 9 unique words.';
     }
 
-    // Pass data to JS
-    $sound_url = plugin_dir_url(__FILE__).'assets/sounds/bingo.mp3';
-    wp_localize_script('bingo-js', 'bingoData', array(
-        'words' => $words_array,
+    $all_words_with_index = [];
+    foreach ( $words as $index => $word ) {
+        $all_words_with_index[] = ['word' => $word, 'index' => $index];
+    }
+
+    $selected_keys = array_rand( $all_words_with_index, 9 );
+    $grid_words = [];
+    foreach ( $selected_keys as $key ) {
+        $grid_words[] = $all_words_with_index[$key];
+    }
+
+    shuffle( $grid_words );
+
+    // SOUND PATH: Pointing to root folder
+    $sound_url = plugins_url( 'bingo.mp3', __FILE__ ); 
+    wp_localize_script( 'bl-script', 'bingoData', array(
         'sound' => $sound_url
     ));
 
-    // Board HTML + score
-    $html  = '<div id="bingo-score">Punkte: 0</div>';
-    $html .= '<div id="bingo-board" class="bingo-grid"></div>';
+    $html = '<div id="bingo-container">';
+    $html .= '<div id="bingo-score-display">Points: 0</div>'; // Added score display
+    $html .= '<div class="bingo-grid">';
+    
+    foreach ( $grid_words as $item ) {
+        $html .= sprintf(
+            '<div class="bingo-cell" data-index="%d">%s</div>',
+            $item['index'],
+            esc_html( $item['word'] )
+        );
+    }
+    
+    $html .= '</div>';
+    $html .= '<div id="bingo-message"></div>';
+    $html .= '</div>';
 
     return $html;
 }
-add_shortcode('bingo_listening', 'wp_bingo_shortcode');
+add_shortcode( 'bingo_listening', 'bl_bingo_shortcode' );
