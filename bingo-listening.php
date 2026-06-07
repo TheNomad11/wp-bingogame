@@ -2,15 +2,15 @@
 /*
 Plugin Name: Bingo Listening Exercise
 Description: A bingo game for language learners based on a text.
-Version: 1.2
+Version: 1.2.14
 Author: TheNomad11
 */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 function bl_enqueue_scripts() {
-    wp_enqueue_style( 'bl-style', plugins_url( 'bingo.css', __FILE__ ) );
-    wp_enqueue_script( 'bl-script', plugins_url( 'bingo.js', __FILE__ ), array(), '1.2', true );
+    wp_enqueue_style( 'bl-style', plugins_url( 'bingo.css', __FILE__ ), array(), filemtime( plugin_dir_path( __FILE__ ) . 'bingo.css' ) );
+    wp_enqueue_script( 'bl-script', plugins_url( 'bingo.js', __FILE__ ), array(), filemtime( plugin_dir_path( __FILE__ ) . 'bingo.js' ), true );
 }
 add_action( 'wp_enqueue_scripts', 'bl_enqueue_scripts' );
 
@@ -19,7 +19,7 @@ function bl_bingo_shortcode( $atts ) {
         'text' => '',
     ), $atts );
 
-    $text = sanitize_text_field( $atts['text'] );
+    $text = $atts['text'];
     if ( empty( $text ) ) return 'Please provide text in the shortcode: [bingo_listening text="your text here"]';
 
     $words = preg_split( '/\s+/', preg_replace( '/[^\p{L}\s]/u', '', $text ) );
