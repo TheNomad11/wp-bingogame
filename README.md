@@ -2,7 +2,7 @@
 
 A lightweight WordPress plugin designed for language learners. This plugin transforms a text into an interactive 3x3 Bingo game, where students must click words in the exact order they appear in the audio/text to win.
 
-#### This plugin is vibe-coded, so be warned!  I am still testing ist. Originally made with ChatGPT in 2025, now in June 2026 updated with Gemma4:31b
+#### This plugin is vibe-coded, so be warned!  I am still testing ist. Originally made with ChatGPT in autumn 2024, now in June 2026 updated with Gemma4:31b and Claude Sonnet 4.6
 
 
 ## 🚀 Features
